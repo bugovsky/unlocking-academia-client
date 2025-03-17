@@ -1,0 +1,26 @@
+{
+  "home": {
+    "title": "Добро пожаловать в Unlocking Academia",
+    "loading": "Загрузка постов..."
+  },
+  "consultation": {
+    "title": "Задать вопрос"
+  },
+  "nav": {
+    "brand": "Unlocking Academia",
+    "consultation": "Задать вопрос",
+    "login": "Войти",
+    "logout": "Выйти",
+    "profile": "Личный кабинет"
+  },
+  "profile": {
+    "title": "Личный кабинет"
+  },
+  "post": {
+    "comments": "Комментарии",
+    "writeComment": "Написать комментарий...",
+    "submitComment": "Отправить комментарий",
+    "rating": "Оценка (0-10):",
+    "submitRating": "Отправить оценку"
+  }
+}
