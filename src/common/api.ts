@@ -4,6 +4,12 @@ const API_BASE_URL = isProduction
   ? "http://your-production-url/api/v1"
   : "http://localhost:8000";
 
+interface ApiError extends Error {
+  status: number;
+  message: string;
+  details?: string;
+}
+
 export const apiFetch = async <T>(
   endpoint: string,
   options: RequestInit = {}
@@ -23,16 +29,16 @@ export const apiFetch = async <T>(
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(
-        `Ошибка запроса: ${response.status} ${response.statusText}`,
-        {
-          endpoint: `${API_BASE_URL}${endpoint}`,
-          status: response.status,
-          statusText: response.statusText,
-          body: errorText,
-        }
-      );
-      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      const error: ApiError = new Error(`HTTP error! status: ${response.status}`) as ApiError;
+      error.status = response.status;
+      error.message = errorText || response.statusText;
+      error.details = JSON.stringify({
+        endpoint: `${API_BASE_URL}${endpoint}`,
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText,
+      });
+      throw error;
     }
 
     return response.json() as Promise<T>;
@@ -59,16 +65,16 @@ export const apiFetchPublic = async <T>(
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(
-        `Ошибка запроса: ${response.status} ${response.statusText}`,
-        {
-          endpoint: `${API_BASE_URL}${endpoint}`,
-          status: response.status,
-          statusText: response.statusText,
-          body: errorText,
-        }
-      );
-      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      const error: ApiError = new Error(`HTTP error! status: ${response.status}`) as ApiError;
+      error.status = response.status;
+      error.message = errorText || response.statusText;
+      error.details = JSON.stringify({
+        endpoint: `${API_BASE_URL}${endpoint}`,
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText,
+      });
+      throw error;
     }
 
     return response.json() as Promise<T>;

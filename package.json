@@ -1,13 +1,8 @@
 {
   "name": "unlocking-academia-client",
   "author": "Dmitriy Zhukovskiy <drzhukovskiy@edu.hse.ru>",
-  "description": "A production ready, batteries included starter template for Vite + React projects",
+  "description": "Unlocking Academia web-app",
   "keywords": [
-    "vite",
-    "react",
-    "boilerplate",
-    "starter",
-    "template"
   ],
   "repository": {
     "type": "git",
@@ -54,6 +49,7 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",
     "react-i18next": "^15.0.1",
+    "react-toastify": "^11.0.5",
     "zod": "^3.23.8",
     "zustand": "^4.5.5"
   },

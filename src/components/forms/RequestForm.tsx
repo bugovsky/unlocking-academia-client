@@ -4,10 +4,11 @@ import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { apiFetch } from "../../common/api";
 import { User } from "../../common/types";
+import { toast } from "react-toastify";
 
 const requestSchema = z.object({
-  content: z.string().min(1, "Введите текст запроса"),
-  userId: z.string().min(1, "Выберите получателя"),
+  question: z.string().min(1, "Введите текст запроса"),
+  recipient_id: z.string().min(1, "Выберите получателя"),
   type: z.enum(["question", "consultation"]),
 });
 
@@ -28,6 +29,10 @@ export const RequestForm = ({ users }: RequestFormProps) => {
         method: "POST",
         body: JSON.stringify(data),
       }),
+      onError: (error: any) => {
+        const message = `Ошибка: ${error.message || "Не удалось отправить запрос"}`;
+        toast.error(message);
+      },
   });
 
   const onSubmit = (data: RequestFormData) => mutation.mutate(data);
@@ -37,7 +42,7 @@ export const RequestForm = ({ users }: RequestFormProps) => {
       <div>
         <label className="block mb-1">Текст запроса:</label>
         <textarea
-          {...register("content")}
+          {...register("question")}
           className="w-full p-2 border rounded-md"
         />
       </div>
@@ -51,7 +56,7 @@ export const RequestForm = ({ users }: RequestFormProps) => {
       <div>
         <label className="block mb-1">Получатель:</label>
         <select
-          {...register("userId")}
+          {...register("recipient_id")}
           className="w-full p-2 border rounded-md"
         >
           <option value="">Выберите получателя</option>

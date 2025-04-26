@@ -1,11 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "../common/api";
 import { useAuth } from "../hooks/useAuth";
-import { Comment, Post, User } from "../common/types";
+import { useComments } from "../hooks/useComments";
+import { Comment, User } from "../common/types";
 import { Navbar } from "../components/layout/Navbar";
 import { useTranslation } from "react-i18next";
 import { useParams } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
+import { usePost } from "../hooks/usePosts";
 
 interface CommentFormData {
   content: string;
@@ -33,18 +35,12 @@ const isImageUrl = (url: string) => {
 export const PostDetail = () => {
   const { t } = useTranslation();
   const { postId } = useParams({ from: "/post/$postId" });
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: post, isLoading: postLoading } = useQuery<Post>({
-    queryKey: ["post", postId],
-    queryFn: () => apiFetch<Post>(`/post/${postId}`),
-  });
+  const { data: post, isLoading: postLoading } = usePost(postId);
 
-  const { data: comments, isLoading: commentsLoading } = useQuery<Comment[]>({
-    queryKey: ["comments", postId],
-    queryFn: () => apiFetch<Comment[]>(`/comment/${postId}`),
-  });
+  const { data: comments, isLoading: commentsLoading } = useComments(postId);
 
   const { data: averageRating, isLoading: ratingLoading } = useQuery<number | null>({
     queryKey: ["rating", postId],
@@ -151,13 +147,13 @@ export const PostDetail = () => {
               ) : (
                 comments.map((comment) => (
                   <div key={comment.id} className="bg-gray-200 p-2 mt-2 rounded-md">
-                    {comment.firstname && comment.lastname ? (
+                    {isAuthenticated && comment.firstname && comment.lastname ? (
                       <p className="font-semibold">
                         {comment.firstname} {comment.lastname}
                         {comment.role === "admin" && " (Администратор)"}
                       </p>
                     ) : (
-                      <p className="font-semibold">Автор неизвестен</p>
+                      <p className="font-semibold">{t("post.unknownAuthor")}</p>
                     )}
                     <p>{comment.content}</p>
                   </div>

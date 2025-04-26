@@ -24,7 +24,7 @@ export const PostCard = ({ post }: PostCardProps) => {
       <div className="flex flex-col h-full">
         <h2 className="text-xl font-bold line-clamp-2">{post.content}</h2>
         <p className="text-gray-600 mt-2">
-          Просмотры: {post.views} | Предметы: {post.domain.join(", ")}
+          Предметы: {post.domain.join(", ")}
         </p>
         {post.media_urls && post.media_urls.length > 0 && (
           <div className="mt-2">

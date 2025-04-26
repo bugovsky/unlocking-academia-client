@@ -9,6 +9,7 @@ import { useAuth } from "../hooks/useAuth";
 import { Domain, User } from "../common/types";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const profileSchema = z.object({
   firstname: z.string().min(1, "Имя обязательно"),
@@ -56,6 +57,10 @@ export const Profile = () => {
         lastname: updatedUser.lastname,
         domain: updatedUser.domain || [],
       });
+    },
+    onError: (error: any) => {
+      const message = `Ошибка: ${error.message || "Не удалось обновить профиль"}`;
+      toast.error(message);
     },
   });
 
