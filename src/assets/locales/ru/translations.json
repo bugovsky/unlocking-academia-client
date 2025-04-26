@@ -21,6 +21,7 @@
     "writeComment": "Написать комментарий...",
     "submitComment": "Отправить комментарий",
     "rating": "Оценка (0-10):",
-    "submitRating": "Отправить оценку"
+    "submitRating": "Отправить оценку",
+    "unknownAuthor": "Автор неизвестен"
   }
 }

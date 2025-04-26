@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate, Link } from "@tanstack/react-router";
 import { login } from "../common/auth";
 import { Navbar } from "../components/layout/Navbar";
+import { toast } from "react-toastify";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -22,6 +23,15 @@ export const Login = () => {
   const mutation = useMutation({
     mutationFn: ({ email, password }: LoginFormData) => login(email, password),
     onSuccess: () => navigate({ to: "/" }),
+    onError: (error: any) => {
+      const message =
+        error.status === 401
+          ? "Неверный email или пароль"
+          : error.status === 403
+          ? "Доступ запрещен"
+          : `Ошибка: ${error.message || "Не удалось войти"}`;
+      toast.error(message);
+    },
   });
 
   const onSubmit = (data: LoginFormData) => mutation.mutate(data);

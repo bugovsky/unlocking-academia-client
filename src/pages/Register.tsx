@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { register } from "../common/auth";
 import { Navbar } from "../components/layout/Navbar";
+import { toast } from "react-toastify";
 
 const registerSchema = z.object({
   email: z.string().email("Неверный email"),
@@ -25,6 +26,13 @@ export const Register = () => {
     mutationFn: ({ email, password, firstname, lastname }: RegisterFormData) =>
       register(email, password, firstname, lastname),
     onSuccess: () => navigate({ to: "/" }),
+    onError: (error: any) => {
+      const message =
+        error.status === 409
+          ? "Пользователь с таким email уже существует"
+          : `Ошибка: ${error.message || "Не удалось зарегистрироваться"}`;
+      toast.error(message);
+    },
   });
 
   const onSubmit = (data: RegisterFormData) => mutation.mutate(data);
