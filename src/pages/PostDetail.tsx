@@ -22,16 +22,6 @@ interface RatingResponse {
   post_id?: string;
 }
 
-const isVideoUrl = (url: string) => {
-  const videoExtensions = [".mp4", ".webm", ".ogg"];
-  return videoExtensions.some((ext) => url.toLowerCase().endsWith(ext));
-};
-
-const isImageUrl = (url: string) => {
-  const imageExtensions = [".jpg", ".jpeg", ".png", ".gif"];
-  return imageExtensions.some((ext) => url.toLowerCase().endsWith(ext));
-};
-
 export const PostDetail = () => {
   const { t } = useTranslation();
   const { postId } = useParams({ from: "/post/$postId" });
@@ -119,19 +109,6 @@ export const PostDetail = () => {
                 <p className="text-gray-600">
                   Предметы: {post.domain.join(", ")}
                 </p>
-                {post.media_urls && post.media_urls.map((url, index) => (
-                  <div key={index} className="mt-2">
-                    {isVideoUrl(url) ? (
-                      <video controls className="w-full">
-                        <source src={url} type="video/mp4" />
-                      </video>
-                    ) : isImageUrl(url) ? (
-                      <img src={url} alt="Post media" className="w-full object-cover" />
-                    ) : (
-                      <p className="text-gray-500">Неподдерживаемый формат медиа</p>
-                    )}
-                  </div>
-                ))}
               </div>
               {averageRating && (
                 <div className="mt-4 text-sm text-gray-500 text-right">

@@ -1,14 +1,14 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { Navbar } from "../components/layout/Navbar";
 import { apiFetch } from "../common/api";
 import { useAuth } from "../hooks/useAuth";
 import { Domain, User } from "../common/types";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { toast } from "react-toastify";
 
 const profileSchema = z.object({
@@ -23,15 +23,15 @@ export const Profile = () => {
   const { t } = useTranslation();
   const { user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [initialData, setInitialData] = useState<ProfileFormData | null>(null);
+  const queryClient = useQueryClient();
 
   const { data: profile, isLoading: profileLoading } = useQuery<User>({
-    queryKey: ["profile"],
+    queryKey: ["profile", user?.id],
     queryFn: () => apiFetch<User>(`/user/${user?.id}`),
     enabled: !!user,
   });
 
-  const { register, handleSubmit, watch, reset } = useForm<ProfileFormData>({
+  const { register, handleSubmit, watch, reset, formState: { isDirty } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       firstname: "",
@@ -43,20 +43,22 @@ export const Profile = () => {
   const mutation = useMutation({
     mutationFn: (data: ProfileFormData) =>
       apiFetch<User>(`/user/${user?.id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
+        method: "PATCH", // Используем PATCH, как в backend
+        body: JSON.stringify({
+          ...data,
+          domain: data.domain?.length ? data.domain : null, // Отправляем null, если домены не выбраны
+        }),
       }),
     onSuccess: (updatedUser) => {
+      // Обновляем кэш профиля
+      queryClient.setQueryData(["profile", user?.id], updatedUser);
+      // Сбрасываем форму с новыми данными
       reset({
         firstname: updatedUser.firstname,
         lastname: updatedUser.lastname,
         domain: updatedUser.domain || [],
       });
-      setInitialData({
-        firstname: updatedUser.firstname,
-        lastname: updatedUser.lastname,
-        domain: updatedUser.domain || [],
-      });
+      toast.success("Профиль успешно обновлён");
     },
     onError: (error: any) => {
       const message = `Ошибка: ${error.message || "Не удалось обновить профиль"}`;
@@ -69,19 +71,11 @@ export const Profile = () => {
       const initial = {
         firstname: profile.firstname,
         lastname: profile.lastname,
-        domain: [],
+        domain: profile.domain || [], // Устанавливаем domain из профиля
       };
       reset(initial);
-      setInitialData(initial);
     }
   }, [profile, reset]);
-
-  const currentData = watch();
-  const isFormChanged =
-    !initialData ||
-    currentData.firstname !== initialData.firstname ||
-    currentData.lastname !== initialData.lastname ||
-    JSON.stringify(currentData.domain) !== JSON.stringify(initialData.domain);
 
   const onSubmit = (data: ProfileFormData) => mutation.mutate(data);
 
@@ -130,9 +124,9 @@ export const Profile = () => {
           <button
             type="submit"
             className={`w-full p-2 rounded-md text-white ${
-              isFormChanged ? "bg-blue-500 hover:bg-blue-600" : "bg-gray-400 cursor-not-allowed"
+              isDirty ? "bg-blue-500 hover:bg-blue-600" : "bg-gray-400 cursor-not-allowed"
             }`}
-            disabled={!isFormChanged || mutation.isPending}
+            disabled={!isDirty || mutation.isPending}
           >
             {mutation.isPending ? "Сохранение..." : "Сохранить"}
           </button>

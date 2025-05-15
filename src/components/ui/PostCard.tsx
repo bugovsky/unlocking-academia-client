@@ -5,16 +5,6 @@ interface PostCardProps {
   post: Post;
 }
 
-const isVideoUrl = (url: string) => {
-  const videoExtensions = [".mp4", ".webm", ".ogg"];
-  return videoExtensions.some((ext) => url.toLowerCase().endsWith(ext));
-};
-
-const isImageUrl = (url: string) => {
-  const imageExtensions = [".jpg", ".jpeg", ".png", ".gif"];
-  return imageExtensions.some((ext) => url.toLowerCase().endsWith(ext));
-};
-
 export const PostCard = ({ post }: PostCardProps) => {
   return (
     <Link
@@ -26,23 +16,6 @@ export const PostCard = ({ post }: PostCardProps) => {
         <p className="text-gray-600 mt-2">
           Предметы: {post.domain.join(", ")}
         </p>
-        {post.media_urls && post.media_urls.length > 0 && (
-          <div className="mt-2">
-            {isVideoUrl(post.media_urls[0]) ? (
-              <video controls className="w-full max-h-40 object-cover">
-                <source src={post.media_urls[0]} type="video/mp4" />
-              </video>
-            ) : isImageUrl(post.media_urls[0]) ? (
-              <img
-                src={post.media_urls[0]}
-                alt="Post media"
-                className="w-full max-h-40 object-cover"
-              />
-            ) : (
-              <p className="text-gray-500">Неподдерживаемый формат медиа</p>
-            )}
-          </div>
-        )}
         {post.rating && (
           <div className="absolute bottom-2 right-2 text-sm text-gray-500">
             {post.rating} / 10

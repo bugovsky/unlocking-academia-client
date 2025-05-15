@@ -19,9 +19,11 @@ export const Navbar = () => {
           {t("nav.brand")}
         </Link>
         <div className="space-x-6">
-          <Link to="/request" className="text-white hover:underline">
-            {t("nav.consultation")}
-          </Link>
+          {isAuthenticated && (
+            <Link to="/request" className="text-white hover:underline">
+              {t("nav.consultation")}
+            </Link>
+          )}
           {isAuthenticated ? (
             <>
               <Link to="/profile" className="text-white hover:underline">
