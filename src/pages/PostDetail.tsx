@@ -78,8 +78,8 @@ export const PostDetail = () => {
       queryClient.invalidateQueries({ queryKey: ["rating", postId] });
       resetRating();
     },
-    onError: (error, data) => {
-      if (error.message.includes("409")) {
+    onError: (error: any, data) => {
+      if (error.status === 409) {
         updateRatingMutation.mutate(data);
       }
     },
@@ -117,7 +117,7 @@ export const PostDetail = () => {
               <div className="flex-1">
                 <h1 className="text-2xl font-bold">{post.content}</h1>
                 <p className="text-gray-600">
-                  Просмотры: {post.views} | Предметы: {post.domain.join(", ")}
+                  Предметы: {post.domain.join(", ")}
                 </p>
                 {post.media_urls && post.media_urls.map((url, index) => (
                   <div key={index} className="mt-2">
